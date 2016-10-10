@@ -76,12 +76,11 @@ def word_length_sorted(words):
         >>> word_length_sorted(["ok", "an", "apple", "a", "day"])
         [(1, ['a']), (2, ['an', 'ok']), (3, ['day']), (5, ['apple'])]
     """
-    list_lens = []
-    for word in words:
-        tup_lens = (len(word), [word])
-
-        list_lens.append(tup_lens)
-    return list_lens
+    # list_lens = []
+    dictionary = {}
+    for word in sorted(words):
+        dictionary[len(word)] = dictionary.get(len(word), []) + [word]
+    return dictionary.items()
 
 
 def translate_to_pirate_talk(phrase):
@@ -186,7 +185,17 @@ def kids_game(names):
     good solutions here will definitely require a dictionary.
     """
 
-    return []
+    dictionary = {}
+    for name in names:
+        dictionary[name[0]] = name  # key = first letter, value = key
+    list_names = [names.pop(0)]
+    for i in range(len(names)):
+        last_word = list_names[len(list_names) - 1]
+        last_letter = last_word[len(last_word) - 1]
+        if last_letter in dictionary.keys():  # search by last letter in keys
+            list_names.append(dictionary[last_letter])  # prob: doesn't keep in order
+            del dictionary[last_letter]
+    return list_names
 
 #####################################################################
 # You can ignore everything below this.
