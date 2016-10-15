@@ -43,41 +43,59 @@ without affecting any of the other instances of the same class.
 # Parts 2 through 5:
 # Create your classes and class methods
 
-class AbstractFood(object):
-    """ A thing that you eat. """
-    def __init__(self, name):
+class Student(object):
+    """ A person who studies something. """
+    def __init__(self, first_name, last_name, address):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.address = address
+
+class Question(object):
+    """ An item that asks you for your knowledge. """
+    def __init__(self, question, correct_answer):
+        self.question = question
+        self.correct_answer = correct_answer
+
+    def ask_and_evaluate(self):
+        """ Asks a question and checks whether the answer given is correct. """
+        print self.question,
+        answer = raw_input("> ")
+        return self.correct_answer == answer
+
+class Exam(object):
+    """ An assignment that asks you questions, and you must answer with no help. """
+    def __init__(self, name, questions):
         self.name = name
+        self.questions = []
 
-    def speak(self):
-        """ In this alternate universe, foods may speak. Notice I did not say 'can.' """
-        print "Hi, I'm %s and I know you're hungry but wait a second." % self.name
+    def add_question(self, question, correct_answer):
+        """ Insert a question into your exam. """
+        question_content = Question(question, correct_answer)
+        self.questions.append(question_content)
 
-class MeatDish(AbstractFood):
-    """ Food with meat. """
-    def __init__(self, name, meat_type):
-        super(MeatDish, self).__init__(name)
-        self.meat_type = meat_type  # pork, shrimp, chicken, or beef
+    def administer(self):
+        """Administers a test and grades it right away. 1.0 is full score. """
+        grade = 0
+        for question in self.questions:
+            if question.ask_and_evaluate():
+                grade += 1
+        return float(grade) / len(self.questions)
 
-    def speak(self):
-        """ Meats speak as well. """
-        super(MeatDish, self).speak()
-        print "I'm a %s dish." % self.meat_type
+class Quiz(Exam):
+    def __init__(self, name, questions):
+        super(Quiz, self).__init__(name)
 
-    def fight(self):
-        """ This plate fights back. """
-        print "* Slaps your fork away *"
+    def administer(self):
+        return super(Quiz, self).administer() > 0.5
 
-class VegetarianDish(AbstractFood):
-    """ Food without meat. """
-    def __init__(self, name, main_veg):
-        super(VegetarianDish, self).__init__(name)
-        self.main_veg = main_veg
+def take_test(exam, student):
+    student.score = exam.administer()
+    print student.first_name + " " + student.last_name + " on the " + exam.name + \
+          " " + str(student.score * 100) + "%"
 
-    def speak(self):
-        """ Veggies speak as well. """
-        super(VegetarianDish, self).speak()
-        print "I'm a mostly %s dish." % self.main_veg
-
-    def fight(self):
-        """ This plate also fights back. """
-        print "* Crawls away *"
+def example():
+    test = Exam('Final Exam', [])
+    test.add_question('What is 1 + 1?', '2')
+    test.add_question('What is 1 + 13?', '14')
+    michelle = Student('Michelle', 'Kim', '2540 College Ave')
+    take_test(test, michelle)
